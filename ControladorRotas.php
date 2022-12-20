@@ -1,6 +1,8 @@
 <?php
-require_once(__DIR__ . '/RespostaRotas.php');
-
+namespace controladorRotas;
+use respostaRotas\RespostaRotas;
+use \Exception;
+require_once(__DIR__."/RespostaRotas.php");
 abstract class ControladorRotas{
 
     protected array $paramsUrl;
@@ -11,10 +13,6 @@ abstract class ControladorRotas{
     public function __construct(array $paramsUrl,array $request,array $headers)
     {
         $this->paramsUrl = $paramsUrl;
-        // print_r('<pre>');
-        // print_r($paramsUrl);
-        // print_r('</pre>');
-        // exit;
         $this->request = $request;
         $this->headers = array_change_key_case($headers, CASE_LOWER);
         $accept        = $this->headers['accept'];
@@ -113,7 +111,7 @@ abstract class ControladorRotas{
     /**
      * Retorna Class para rota chamada pela API
      */
-    public static function getInstance(string $route, array $request, string $diretorio, array $headers): object
+    public static function getInstance(string $route, array $request, string $diretorio, array $headers) : object
     {
         if (empty($diretorio)) {
             throw new Exception('Diretório não definido');
@@ -122,17 +120,18 @@ abstract class ControladorRotas{
             $diretorio = substr($diretorio, 0, -1);
         }
         list($rota, $params) = self::registerRoute($route);
-        // print_r('<pre>');
-        // var_dump($rota);
-        // print_r('</pre>');
-        // print_r('<pre>');
-        // print_r($diretorio . "/{$rota}.php");
-        // print_r('</pre>');
-        // exit;
         if (!file_exists($diretorio . "/{$rota}.php")) {
             throw new Exception("Rota não encontrada: " . $rota, 404);
         }
         require_once($diretorio . "/{$rota}.php");
+        
+        // print_r('<pre>');
+        // var_dump($route);
+        // print_r('</pre>');
+        // print_r('<pre>');
+        // var_dump(class_exists($rota));
+        // print_r('</pre>');
+        // exit;
         if (!class_exists($rota)) {
             throw new Exception("Classe não encontrada: {$rota}", 404);
         }

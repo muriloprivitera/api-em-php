@@ -1,5 +1,5 @@
 <?php
-
+namespace respostaRotas;
 class RespostaRotas{
 
     private int $statusHttp = 200;
